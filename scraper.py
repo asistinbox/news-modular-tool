@@ -3,14 +3,22 @@ import xml.etree.ElementTree as ET
 
 def fetch_financial_news():
     """
-    Module 1: Scraping Module
+    Module 1: Scraping Module (Updated with User-Agent)
     Fetches the latest financial news headlines and URLs from CNBC.
     """
     url = "https://www.cnbc.com/id/100003114/device/rss/rss.html"
     
+    # We add a 'User-Agent' header to make our script look like a standard web browser
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    }
+    
     try:
+        # Create the request with our custom headers
+        req = urllib.request.Request(url, headers=headers)
+        
         # Open the URL and read the data
-        response = urllib.request.urlopen(url)
+        response = urllib.request.urlopen(req)
         data = response.read()
         
         # Parse the XML data
@@ -18,7 +26,7 @@ def fetch_financial_news():
         items = root.findall('.//item')
         
         articles = []
-        for item in items[:5]: # Let's just grab the top 5 articles for now
+        for item in items[:5]: # Grab top 5 articles
             title = item.find('title').text
             link = item.find('link').text
             
@@ -33,10 +41,11 @@ def fetch_financial_news():
         print(f"Error fetching news: {e}")
         return []
 
-# This part lets us test the module
+# Test execution
 if __name__ == "__main__":
-    print("Testing Scraping Module...")
+    print("Testing Scraping Module with User-Agent...")
     news = fetch_financial_news()
+    print(f"Total articles found: {len(news)}")
     for index, article in enumerate(news, 1):
         print(f"\nArticle {index}:")
         print(f"Heading: {article['title']}")
