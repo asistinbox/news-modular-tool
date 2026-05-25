@@ -1,0 +1,24 @@
+name: Test Scraping Module
+
+# This allows you to manually run the code with a button click
+on:
+  workflow_dispatch:
+
+jobs:
+  run-scraper:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Download the code from your repository onto the cloud computer
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # 2. Set up Python on the cloud computer
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    # 3. Run your scraper script
+    - name: Run Scraper Script
+      run: python scraper.py
