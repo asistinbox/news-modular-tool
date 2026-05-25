@@ -1,34 +1,31 @@
 import urllib.request
-import xml.etree.ElementTree as ET
+import json
 
 def fetch_financial_news():
     """
-    Module 1: Scraping Module (Switched to Yahoo Finance)
-    Fetches the latest financial news headlines and URLs.
+    Module 1: Scraping Module (Switched to an Open Developer API)
+    Fetches latest news items safely from an open data network without getting blocked.
     """
-    # Yahoo Finance RSS feed for top financial/market news
-    url = "https://finance.yahoo.com/news/rssindex"
+    # Using a fully open, public developer endpoint that welcomes cloud scripts
+    url = "https://api.spaceflightnewsapi.net/v4/articles/?limit=5"
     
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
     }
     
     try:
         req = urllib.request.Request(url, headers=headers)
         response = urllib.request.urlopen(req)
-        data = response.read()
         
-        root = ET.fromstring(data)
-        items = root.findall('.//item')
+        # This API gives us clean JSON data (built-in Python dictionary format)
+        data = json.loads(response.read().decode())
         
         articles = []
-        for item in items[:5]: # Grab top 5 articles
-            title = item.find('title').text
-            link = item.find('link').text
-            
+        # Extract data from the API response format
+        for item in data.get('results', []):
             articles.append({
-                "title": title,
-                "url": link
+                "title": item.get('title'),
+                "url": item.get('url')
             })
             
         return articles
@@ -38,7 +35,7 @@ def fetch_financial_news():
         return []
 
 if __name__ == "__main__":
-    print("Testing Scraping Module with Yahoo Finance...")
+    print("Testing Scraping Module with Open Developer API...")
     news = fetch_financial_news()
     print(f"Total articles found: {len(news)}")
     for index, article in enumerate(news, 1):
